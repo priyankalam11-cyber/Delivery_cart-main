@@ -1,179 +1,121 @@
-# Logistics Delivery Management System
+# Smart Logistics Management System
 
-Full-stack demo for logistics operations with role-based dashboards, rider assignment, POD hashing and verification, disputes, audit logs, and analytics.
+A full-stack logistics management system for managing orders, riders, deliveries, proof of delivery, disputes, and analytics.
 
-## Stack
+## Tech Stack
 
-- Backend: Node.js, Express, PostgreSQL
-- Frontend: React with Vite
-- Storage: local file storage mock for development (`backend/uploads`)
-- Auth: JWT
+- React + Vite
+- Node.js + Express
+- PostgreSQL
+- JWT Authentication
+
+## Features
+
+- Role-based login
+- Create and track orders
+- Assign riders manually or automatically
+- Update delivery status
+- Upload and verify Proof of Delivery (POD)
+- Manage disputes
+- Audit logs
+- Delivery and rider analytics
+- Daily reports
 
 ## Project Structure
 
 ```text
 project_1/
-  backend/
-  frontend/
-  database/
+├── backend/
+├── frontend/
+└── database/
 ```
 
-## Backend Features
+## Setup
 
-- Role-aware JWT authentication for admin, rider, customer, support agent, and auditor
-- Order creation with hub assignment
-- Manual rider assignment and auto-assignment using nearest rider coordinates
-- Delivery status timeline: `picked -> out_for_delivery -> delivered`
-- POD upload with SHA-256 hash persistence
-- POD verification by recomputing the file hash during access
-- Dispute workflow: `open -> investigate -> resolve -> close`
-- Audit logs for POD access and dispute actions
-- Analytics for on-time delivery, rider performance, and dispute rate
-- Daily report job that writes JSON reports into `backend/reports`
-
-## Frontend Pages
-
-- Admin dashboard
-- Rider dashboard
-- Customer tracking page
-- Support dashboard
-- Analytics dashboard
-
-## Environment Setup
-
-### 1. Install prerequisites
+### Requirements
 
 - Node.js 18+
 - PostgreSQL 14+
 
-### 2. Create the database
+### 1. Create the Database
 
 ```sql
 CREATE DATABASE logistics_db;
 ```
 
-Run the schema and seed scripts:
+Run the database scripts:
 
 ```bash
 psql -U postgres -d logistics_db -f database/schema.sql
 psql -U postgres -d logistics_db -f database/seed.sql
 ```
 
-### 3. Configure backend
+### 2. Setup Backend
 
 ```bash
 cd backend
 copy .env.example .env
+npm install
 ```
 
-Update `.env` if your PostgreSQL connection differs.
+Update `.env` with your PostgreSQL details if needed.
 
-### 4. Install dependencies
+### 3. Setup Frontend
 
 ```bash
-cd backend
-npm install
-
-cd ../frontend
+cd frontend
 npm install
 ```
 
-### 5. Run locally
+### 4. Run the Project
 
-Backend:
+Start the backend:
 
 ```bash
 cd backend
 npm run dev
 ```
 
-Frontend:
+Start the frontend in another terminal:
 
 ```bash
 cd frontend
 npm run dev
 ```
 
-Frontend URL: `http://localhost:5173`
-Backend URL: `http://localhost:5000`
+**Frontend:** `http://localhost:5173`  
+**Backend:** `http://localhost:5000`
+
+## Main API Endpoints
+
+| Module | Method | Endpoint |
+|---|---|---|
+| Login | POST | `/api/auth/login` |
+| Orders | GET | `/api/orders` |
+| Orders | POST | `/api/orders` |
+| Track Order | GET | `/api/orders/:id/track` |
+| Update Order | PATCH | `/api/orders/:id/status` |
+| Assign Rider | POST | `/api/assignments/:orderId/manual` |
+| Auto Assign Rider | POST | `/api/assignments/:orderId/auto` |
+| Riders | GET | `/api/riders` |
+| Upload POD | POST | `/api/pod/:orderId` |
+| Verify POD | GET | `/api/pod/:orderId` |
+| Disputes | GET | `/api/disputes` |
+| Analytics | GET | `/api/analytics` |
 
 ## Sample Users
 
-All sample users use password `password123`.
+Sample users are included in the seed data.
 
-- `Priya Mehta`
-- `Rohan Yadav`
-- `Ananya Verma`
-- `Neha Singh`
-- `Vikram Iyer`
+**Password:** `password123`
 
-## Sample API Endpoints
-
-### Authentication
-
-- `POST /api/auth/login`
-
-```json
-{
-  "name": "Alice Admin",
-  "password": "password123"
-}
-```
-
-### Orders
-
-- `GET /api/orders`
-- `POST /api/orders`
-- `GET /api/orders/:id/track`
-- `POST /api/orders/:id/feedback`
-- `PATCH /api/orders/:id/status`
-
-Example create order body:
-
-```json
-{
-  "customerId": 3,
-  "hubId": 1,
-  "pickupAddress": "Delhi Central Hub, New Delhi",
-  "deliveryAddress": "14 Lodhi Estate, New Delhi",
-  "latitude": 28.6139,
-  "longitude": 77.209,
-  "promisedAt": "2026-03-28T18:00:00.000Z"
-}
-```
-
-### Assignments
-
-- `GET /api/assignments`
-- `POST /api/assignments/:orderId/manual`
-- `POST /api/assignments/:orderId/auto`
-
-### Riders
-
-- `GET /api/riders`
-- `GET /api/riders/me/tasks`
-- `PATCH /api/riders/:riderId/availability`
-
-### POD
-
-- `POST /api/pod/:orderId`
-- `GET /api/pod/:orderId`
-
-Upload field name: `pod`
-
-### Disputes
-
-- `GET /api/disputes`
-- `POST /api/disputes/:orderId`
-- `PATCH /api/disputes/:id`
-
-### Analytics and Audit
-
-- `GET /api/analytics`
-- `GET /api/analytics/audit`
+- Priya Mehta
+- Rohan Yadav
+- Ananya Verma
+- Neha Singh
+- Vikram Iyer
 
 ## Notes
 
-- The backend currently uses local disk storage for POD uploads in development.
-- To move to AWS S3 later, replace the upload handler and keep the stored `file_url` and `file_hash` contract unchanged.
-- This environment did not have `node` or `npm` installed, so the code was prepared but not executed here.
+- POD files are stored locally in `backend/uploads` during development.
+- AWS S3 can be added later by replacing the current file storage implementation.
